@@ -1,4 +1,3 @@
-// index.js
 const express = require("express");
 const cors = require("cors");
 const request = require("request");
@@ -11,7 +10,14 @@ app.get("/proxy", (req, res) => {
   if (!videoUrl) return res.status(400).send("Missing URL");
 
   console.log("Proxying:", videoUrl);
-  request(videoUrl).pipe(res);
+
+  request
+    .get(videoUrl)
+    .on("error", (err) => {
+      console.error("Request Error:", err);
+      res.status(500).send("Proxy failed.");
+    })
+    .pipe(res);
 });
 
 const port = process.env.PORT || 3000;
